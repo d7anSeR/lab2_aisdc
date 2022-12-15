@@ -24,26 +24,72 @@ public:
 		this->number_points = number_points;
 	}
 	int Get_number_points() const { return number_points; }
+	Complex operator +(Complex& other) //конкатенация двух линий 
+	{
+		if (this->number_points + other.Get_number_points() >= this->more_number)
+		{
+			this->more_number = (this->Get_more_points() + other.Get_number_points());
+			Line* tmpline = new Line[this->Get_more_points()];
+			tmpline = this;
+			*this = *tmpline;
+		}
+		for (int i = 0, j = this->number_points; i < other.Get_number_points(); i++, j++)
+		{
+			this->line[j] = other[i];
+		}
+		this->number_points += other.Get_number_points();
+		return *this;
+	}
 
-	//Complex operator [] (int other_point) const //for reading
-	//{
-	//	if (other_point >= 0 && other_point < number_points)
-	//		return (line[other_point]);
-	//	throw "!invalid index!";
-	//}
-	//Complex& operator [] (int other_point) //for writing
-	//{
-	//	if (other_point >= 0 && other_point < number_points)
-	//		return (line[other_point]);
-	//	throw "!invalid index!";
-	//}
+	Line operator +(Points& point)//сложение ломаной и точки, добавление в конец 
+	{
+		this->number_points++;
+		if (this->Get_number_points() == this->Get_more_points())
+		{
+			this->more_number *= 2;
+			Line* tmpline = new Line[this->Get_more_points()];
+			tmpline = this;
+			*this = *tmpline;
+		}
+		(*this)[this->Get_number_points() - 1] = point;
+		return *this;
+	}
+	friend Line operator +(Points& point, Line& tmp_line)//сложение ломаной и точки +
+	{
+		tmp_line.number_points++;
+		if (tmp_line.Get_number_points() == tmp_line.Get_more_points())
+		{
+			tmp_line.more_number *= 2;
+			Line* tline = new Line[tmp_line.Get_more_points()];
+			tline = &tmp_line;
+			tmp_line = *tline;
+		}
+		for (int i = tmp_line.Get_number_points() - 1; i != 0; i--)
+		{
+			tmp_line[i] = tmp_line[i - 1];
+		}
+		tmp_line[0] = point;
+		return tmp_line;
+	}
+	Complex operator [] (int other_point) const //for reading
+	{
+		if (other_point >= 0 && other_point < number_points)
+			return (line[other_point]);
+		throw "!invalid index!";
+	}
+	Complex& operator [] (int other_point) //for writing
+	{
+		if (other_point >= 0 && other_point < number_points)
+			return (line[other_point]);
+		throw "!invalid index!";
+	}
 	template<class C>
 	double Length()
 	{
 		cout << this;
 		double len = 0;
 		for (int i = 0; (i + 1) < this->Get_number_points(); i++)
-			len += pow(pow(abs((*this)[i + 1].x - (*this)[i].x), 2) + pow(abs((*this)[i + 1].y - (*this)[i].y), 2), 0.5);
+			len += sqrt(pow((*this)[i].reX - (*this)[i + 1].reX + (*this)[i].imX- (*this)[i].imX, 2) + pow((*this)[i].reY - (*this)[i + 1].reY + (*this)[i].imY - (*this)[i].imY, 2));
 		return len;
 	}
 
@@ -56,6 +102,7 @@ public:
 
 		}
 		return in;
+	}
 	}*/
 	friend ostream& operator<<(ostream& out, Complex<C>& a)
 	{
@@ -66,18 +113,18 @@ public:
 		}
 		return out;
 	}
-	template<class T>
-	Complex<T>& operator=(const Complex<C>& other)
+	Complex operator=(const Complex& other)
 	{
-		tmp.re = otner.re;
-		tmp.im = other.im;
-		return *tmp;
+		for (int i = 0; i < other.Get_number_points(); i++)
+		{
+			(*this)[i].reX = other[i].reX;
+			(*this)[i].reY = other[i].reY;
+			(*this)[i].imX = other[i].imX;
+			(*this)[i].imY = other[i].imY;
+		}
+		return *this;
 	}
-	double return_double() const
-	{
-		return sqrt(re * re - im * im);
-	}
-
+	
 	bool operator == (const Complex& other)
 	{
 		if (this->Get_number_points() == other.Get_number_points())
@@ -234,17 +281,17 @@ public:
 		tmp_line[0] = point;
 		return tmp_line;
 	}
-	template<class C>
-	void SetRe(C Re)
-	{
-		this->re = Re;
-	}
+	//template<class C>
+	//void SetRe(C Re)
+	//{
+	//	this->re = Re;
+	//}
 
-	template<class C>
-	void SetIm(C Im)
-	{
-		this->im = Im;
-	}
+	//template<class C>
+	//void SetIm(C Im)
+	//{
+	//	this->im = Im;
+	//}
 	Line operator =(const Line& tmp_line)
 	{
 		for (int i = 0; i < tmp_line.Get_number_points(); i++)
