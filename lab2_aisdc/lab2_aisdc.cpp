@@ -9,7 +9,7 @@ private:
 	{
 		C reX = 0, imX = 0, reY = 0, imY = 0;
 	};
-	Complex* line = NULL;
+	PointsC* line = NULL;
 	int number_points = 0, more_number = 0;
 public:
 	Complex<C>(int number_points = 0)
@@ -25,37 +25,52 @@ public:
 	}
 	int Get_number_points() const { return number_points; }
 
-	Complex operator [] (int other_point) const //for reading
-	{
-		if (other_point >= 0 && other_point < number_points)
-			return (line[other_point]);
-		throw "!invalid index!";
-	}
-	Complex& operator [] (int other_point) //for writing
-	{
-		if (other_point >= 0 && other_point < number_points)
-			return (line[other_point]);
-		throw "!invalid index!";
-	}
+	//Complex operator [] (int other_point) const //for reading
+	//{
+	//	if (other_point >= 0 && other_point < number_points)
+	//		return (line[other_point]);
+	//	throw "!invalid index!";
+	//}
+	//Complex& operator [] (int other_point) //for writing
+	//{
+	//	if (other_point >= 0 && other_point < number_points)
+	//		return (line[other_point]);
+	//	throw "!invalid index!";
+	//}
 	template<class C>
 	double Length()
 	{
-		sqrt(reX * reX + imX * imX);
+		cout << this;
+		double len = 0;
+		for (int i = 0; (i + 1) < this->Get_number_points(); i++)
+			len += pow(pow(abs((*this)[i + 1].x - (*this)[i].x), 2) + pow(abs((*this)[i + 1].y - (*this)[i].y), 2), 0.5);
+		return len;
 	}
 
-	friend istream& operator>>(istream& in, Complex<C>& x)
+	/*friend istream& operator>>(istream& in, Complex<C>& a)
 	{
-		return (in >> x.re >> x.im);
-	}
-	friend ostream& operator<<(ostream& out, Complex<C>& x)
+		for (int i = 0; i < a.Get_number_points(); i++)
+		{
+			cout << "[" << i + 1 << "] :";
+			in >> a.Get_ReX() << " + " << a.Get_ImX() << " * i" << ")" << "," << "(" << a.Get_ReY() << " + " << a.Get_ImY() << " * i" << ")" << ")" << endl;
+
+		}
+		return in;
+	}*/
+	friend ostream& operator<<(ostream& out, Complex<C>& a)
 	{
-		return (out << "(" << x.re << "," << x.im << ")");
+		for (int i = 0; i < a.Get_number_points(); i++)
+		{
+			out << "[" << i+1 << "]" << "(" << "(" << a.Get_ReX() << " + " << a.Get_ImX() << " * i" << ")" << "," << "(" << a.Get_ReY() << " + " << a.Get_ImY() << " * i" << ")" << ")" << endl;
+
+		}
+		return out;
 	}
 	template<class T>
-	Complex<T>& operator=(const Complex<C>& other, const Line<T>& tmp)
+	Complex<T>& operator=(const Complex<C>& other)
 	{
-		tmp.re = otner.re
-			tmp.im = other.im;
+		tmp.re = otner.re;
+		tmp.im = other.im;
 		return *tmp;
 	}
 	double return_double() const
@@ -63,29 +78,49 @@ public:
 		return sqrt(re * re - im * im);
 	}
 
-	template<class C>
 	bool operator == (const Complex& other)
 	{
-		if (this->Get_Im() == other->Get_Im() && this->Get_Re() == other->Get_Re())
+		if (this->Get_number_points() == other.Get_number_points())
+		{
+			for (int i = 0; i < this->Get_number_points(); i++)
+			{
+				if ((*this)[i].reX != other_line[i].reX || (*this)[i].reY != other_line[i].reY || (*this)[i].imX != other_line[i].imX || (*this)[i].imY != other_line[i].imY)
+					return false;
+			}
 			return true;
+		}
 		return false;
 	}
-	template<class C>
 	bool operator != (const Complex& other)
 	{
-		if (this->Get_Im() != other->Get_Im() || this->Get_Re() != other->Get_Re())
-			return true;
-		return false;
+		if (this->Get_number_points() == other_line.Get_number_points())
+		{
+			for (int i = 0; i < this->Get_number_points(); i++)
+			{
+				if ((*this)[i].reX != other_line[i].reX || (*this)[i].reY != other_line[i].reY || (*this)[i].imX != other_line[i].imX || (*this)[i].imY != other_line[i].imY)
+					return true;
+			}
+			return false;
+		}
+		return true;
 	}
+
 	template<class C>
-
-	C Get_Re()const {
-		return this->re;
+	C Get_ReX()const {
+		return this->line->reX;
 	}
 
 
-	C Get_Im()const {
-		return this->im;
+	C Get_ImX()const {
+		return this->line->imX;
+	}
+	C Get_ReY()const {
+		return this->line->reY;
+	}
+
+
+	C Get_ImY()const {
+		return this->line->imY;
 	}
 
 	void PrintLineC() const
