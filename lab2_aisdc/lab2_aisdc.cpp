@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <cstdlib>
 #include <math.h>
+#include <conio.h>
+
 using namespace std;
 template<class C>
 class Complex {
@@ -26,10 +28,6 @@ public:
 	int Get_number_points() const { return number_points; }
 	int Get_more_points() const { return more_number; }
 	PointsC* GetLine() const { return line; }
-	PointsC GetElem(int i) const {
-		if (i >= 0 && i < number_points) return line[i];
-		throw "invalid index";
-	}
 	Complex operator +(Complex& other) //конкатенация двух линий 
 	{
 		if (this->number_points + other.Get_number_points() >= this->more_number)
@@ -63,7 +61,7 @@ public:
 
 	friend Complex operator +(PointsC& point, Complex& tmp_line)//сложение ломаной и точки +
 	{
-		tmp_line.number_points;
+		tmp_line.number_points++;
 		if (tmp_line.Get_number_points() == tmp_line.Get_more_points())
 		{
 			tmp_line.more_number *= 2;
@@ -91,9 +89,9 @@ public:
 		throw "!invalid index!";
 	}
 	template<class C>
-	double LengthC()
+	double LengthC() const
 	{
-		cout << this;
+		this->PrintLineC();
 		double len = 0, a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
 		for (int i = 0; (i + 1) < this->Get_number_points(); i++)
 		{
@@ -107,25 +105,13 @@ public:
 			h = 2 * e * f; //*i
 			len += sqrt(sqrt(pow(c + g, 2) + pow(d + h, 2)));
 		}
-		return len;
+		return double(len);
 	}
-
-	/*friend istream& operator>>(istream& in, Complex<C>& a)
+	friend ostream& operator<<(ostream& out, Complex& a)
 	{
 		for (int i = 0; i < a.Get_number_points(); i++)
 		{
-			cout << "[" << i + 1 << "] :";
-			in >> a.Get_ReX() << " + " << a.Get_ImX() << " * i" << ")" << "," << "(" << a.Get_ReY() << " + " << a.Get_ImY() << " * i" << ")" << ")" << endl;
-
-		}
-		return in;
-	}
-	}*/
-	friend ostream& operator<<(ostream& out, Complex<C>& a)
-	{
-		for (int i = 0; i < a.Get_number_points(); i++)
-		{
-			out << "[" << i+1 << "]" << "(" << "(" << a.Get_ReX() << ";" << a.Get_ImX() << ")" << "," << "(" << a.Get_ReY() << ";" << a.Get_ImY() << ")" << ")" << endl;
+			out << "[" << i+1 << "]" << "(" << "(" << a[i].reX << ";" << a[i].imX << ")" << "," << "(" << a[i].reY << ";" << a[i].imY << ")" << ")" << endl;
 
 		}
 		return out;
@@ -171,20 +157,20 @@ public:
 
 	template<class C>
 	C Get_ReX()const {
-		return this->line->reX;
+		return line->reX;
 	}
 	C Get_ImX()const {
-		return this->line->imX;
+		return line->imX;
 	}
 	C Get_ReY()const {
-		return this->line->reY;
+		return line->reY;
 	}
 	C Get_ImY()const {
-		return this->line->imY;
+		return line->imY;
 	}
-	void PrintLineC() const
+	void PrintLineC()
 	{
-		std::cout << this;
+		std::cout << *this;
 	}
 };
 
@@ -338,7 +324,7 @@ public:
 	}
 	void PrintLine() const
 	{
-		std::cout << this[0];
+		std::cout << *this;
 	}
 };
 
@@ -395,7 +381,7 @@ int IndexPoint(Line<T>& start_line, bool flag)
 		int choice = 0;
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		while (flag)
 		{
@@ -436,13 +422,13 @@ int IndexPoint(Line<T>& start_line, bool flag)
 			std::cin >> x;
 			std::cout << "Enter y: ";
 			std::cin >> y;
-			start_line[index - 1].x = x;
-			start_line[index - 1].y = y;
+			start_line[index - 1].x = T(x);
+			start_line[index - 1].y = T(y);
 			std::cout << start_line << endl;
 			std::cout << "Coordinates of the point with index " << index << " = (" << start_line[index - 1].x << "; " << start_line[index - 1].y << ")" << endl << endl;
 		}
 		std::cout << "Press 'Backspace' to return";
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -458,7 +444,7 @@ int IndexPointC(Complex<C>& start_line, bool flag)
 		int choice = 0;
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		while (flag)
 		{
@@ -491,7 +477,7 @@ int IndexPointC(Complex<C>& start_line, bool flag)
 				std::cout << endl << "Try again" << endl;
 			}
 		}
-		if (choice == 1) cout << "Coordinates: " << "(" << "(" << start_line[index - 1].x1 << ";" << start_line[index - 1].x2 << ")" << "," << "(" << start_line[index - 1].y1 << ";" << start_line[index - 1].y2 << ")" << ")" << endl;
+		if (choice == 1) cout << "Coordinates: " << "(" << "(" << start_line[index - 1].reX << ";" << start_line[index - 1].imX << ")" << "," << "(" << start_line[index - 1].reY << ";" << start_line[index - 1].imY << ")" << ")" << endl;
 		if (choice == 2)
 		{
 			int x1 = 0, x2 = 0, y1 = 0, y2 =0;
@@ -503,15 +489,15 @@ int IndexPointC(Complex<C>& start_line, bool flag)
 			std::cin >> y1;
 			std::cout << "Enter y2: ";
 			std::cin >> y2;
-			start_line[index - 1].x1 = x1;
-			start_line[index - 1].x2 = x2;
-			start_line[index - 1].y1 = y1;
-			start_line[index - 1].y2 = y2;
+			start_line[index - 1].reX = C(x1);
+			start_line[index - 1].imX = C(x2);
+			start_line[index - 1].reY = C(y1);
+			start_line[index - 1].imY = C(y2);
 			std::cout << start_line << endl;
-			std::cout << "Coordinates of the point with index " << index << " = (" << "(" << start_line[index - 1].x1 << ";" << start_line[index - 1].x2 << ")" << "," << "(" << start_line[index - 1].y1 << ";" << start_line[index - 1].y2 << ")" << ")" << endl << endl;
+			std::cout << "Coordinates of the point with index " << index << " = (" << "(" << start_line[index - 1].reX << ";" << start_line[index - 1].imX << ")" << "," << "(" << start_line[index - 1].reY << ";" << start_line[index - 1].imY << ")" << ")" << endl << endl;
 		}
 		std::cout << "Press 'Backspace' to return";
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -561,7 +547,7 @@ int SumLine(Line<T>& start_line, bool flag)
 		std::cout << endl << "Result: " << endl;
 		start_line.PrintLine();
 		std::cout << "Press 'Backspace' to return" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag1 = true;
 	}
 	return -1;
@@ -611,7 +597,7 @@ int SumLineC(Complex<C>& start_line, bool flag)
 		std::cout << endl << "Result: " << endl;
 		start_line.PrintLineC();
 		std::cout << "Press 'Backspace' to return" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag1 = true;
 	}
 	return -1;
@@ -626,7 +612,7 @@ int SumPoint_Line(Line<T>& start_line, bool flag)
 	{
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		T x = 0, y = 0;
 		std::cout << "Press coordinates of the point which want to add: " << endl;
@@ -641,7 +627,7 @@ int SumPoint_Line(Line<T>& start_line, bool flag)
 		tmp_line.PrintLine();
 		start_line = tmp_line;
 		std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -655,7 +641,7 @@ int SumPoint_LineC(Complex<C>& start_line, bool flag)
 	{
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		C x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 		std::cout << "Press coordinates of the point which want to add: " << endl;
@@ -668,15 +654,15 @@ int SumPoint_LineC(Complex<C>& start_line, bool flag)
 		std::cout << "y2 = ";
 		cin >> y2;
 		Complex<C> point(1);
-		point[0].x1 = x1;
-		point[0].x2 = x2;
-		point[0].y1 = y1;
-		point[0].y2 = y2;
+		point[0].reX = x1;
+		point[0].imX = x2;
+		point[0].reY = y1;
+		point[0].imY = y2;
 		Complex<C> tmp_line = point[0] + start_line;
 		tmp_line.PrintLineC();
 		start_line = tmp_line;
 		std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -691,7 +677,7 @@ int SumLine_Point(Line<T>& start_line, bool flag)
 	{
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		T x = 0, y = 0;
 		std::cout << "Press coordinates of the point which want to add: " << endl;
@@ -706,7 +692,7 @@ int SumLine_Point(Line<T>& start_line, bool flag)
 		start_line = tmp_line;
 		tmp_line.PrintLine();
 		std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -720,7 +706,7 @@ int SumLine_PointC(Complex<C>& start_line, bool flag)
 	{
 		std::cout << endl << "To continue, press any key except 'Backspace'..." << endl;
 		std::cout << endl << "or 'Backspace' because to back to main menu" << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		C x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 		std::cout << "Press coordinates of the point which want to add: " << endl;
@@ -733,15 +719,15 @@ int SumLine_PointC(Complex<C>& start_line, bool flag)
 		std::cout << "y2 = ";
 		std::cin >> y2;
 		Complex<C> point(1);
-		point[0].x1 = x1;
-		point[0].x2 = x2;
-		point[0].y1 = y1;
-		point[0].y2 = y2;
+		point[0].reX = x1;
+		point[0].imX = x2;
+		point[0].reY = y1;
+		point[0].imY = y2;
 		Complex<C> tmp_line = start_line + point[0];
 		start_line = tmp_line;
 		tmp_line.PrintLineC();
 		std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag = true;
 	}
 	return -1;
@@ -752,17 +738,18 @@ int LenLine(Line<T>& start_line)
 	int choice = 0;
 	std::cout << "Length of the line: " << start_line.Length() << endl;
 	std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-	choice = getchar();
+	choice = _getch();
 	if (choice == 8) return choice;
 	return -1;
 }
 template <class C>
-int LenLineC(Complex<C>& start_line)
+int LenLineC(const Complex<C>& start_line)
 {
 	int choice = 0;
-	std::cout << "Length of the line: " << start_line.LengthC() << endl;
+	/*double leng = start_line.LengthC();
+	cout << "Length of the line: " << leng << endl;*/
 	std::cout << endl << "Press 'Backspace' if want to back" << endl << endl;
-	choice = getchar();
+	choice = _getch();
 	if (choice == 8) return choice;
 	return -1;
 }
@@ -777,7 +764,7 @@ int Compare(Line<T>& start_line)
 	start_line.PrintLine();
 	while (flag1)
 	{
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		try {
 			std::cout << "Press the second broken line " << endl;
@@ -813,7 +800,7 @@ int Compare(Line<T>& start_line)
 		if (start_line == new_line) cout << "The broken lines are equal!" << endl;
 		if (start_line != new_line) cout << "The broken lines are unequal!" << endl;
 		std::cout << "Press 'Backspace' to return" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag1 = true;
 	}
 	return -1;
@@ -829,7 +816,7 @@ int CompareC(Complex<C>& start_line)
 	start_line.PrintLineC();
 	while (flag1)
 	{
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) return choice;
 		try {
 			std::cout << "Press the second broken line " << endl;
@@ -865,7 +852,7 @@ int CompareC(Complex<C>& start_line)
 		if (start_line == new_line) cout << "The broken lines are equal!" << endl;
 		if (start_line != new_line) cout << "The broken lines are unequal!" << endl;
 		std::cout << "Press 'Backspace' to return" << endl << endl;
-		choice = getchar();
+		choice = _getch();
 		if (choice == 8) flag1 = true;
 	}
 	return -1;
@@ -911,26 +898,26 @@ void AutoCreateLine(T x, T y, Line<T>& line, T a, T b, T h)
 template <class C>
 void AutoCreateLineC(C x1, C x2, C y1, C y2, Complex<C>& line, C a, C b, C h)
 {
-	line[0].x1 = x1;
-	line[0].x2 = x2;
-	line[0].y1 = y1;
-	line[0].y2 = y2;
-	line[1].x1 = x1;
-	line[1].x2 = x2;
-	line[1].y1 = y1 + a;
-	line[1].y2 = y2 + a;
-	line[2].x1 = x1 + h;
-	line[2].x2 = x2 + h;
-	line[2].y1 = y1 + a;
-	line[2].y2 = y2 + a;
-	line[3].x1 = x1 + h;
-	line[3].x2 = x2 + h;
-	line[3].y1 = y1 + a - b;
-	line[3].y2 = y2 + a - b;
-	line[4].x1 = x1;
-	line[4].x2 = x2;
-	line[4].y1 = y1;
-	line[4].y2 = y2;
+	line[0].reX = x1;
+	line[0].imX = x2;
+	line[0].reY = y1;
+	line[0].imY = y2;
+	line[1].reX = x1;
+	line[1].imX = x2;
+	line[1].reY = y1 + a;
+	line[1].imY = y2 + a;
+	line[2].reX = x1 + h;
+	line[2].imX = x2 + h;
+	line[2].reY = y1 + a;
+	line[2].imY = y2 + a;
+	line[3].reX = x1 + h;
+	line[3].imX = x2 + h;
+	line[3].reY = y1 + a - b;
+	line[3].imY = y2 + a - b;
+	line[4].reX = x1;
+	line[4].imX = x2;
+	line[4].reY = y1;
+	line[4].imY = y2;
 	line.PrintLineC();
 }
 
@@ -1105,7 +1092,6 @@ int main()
 		{
 		case 1:
 		{
-
 			flag = true;
 			int n = 0;
 
@@ -1229,3 +1215,9 @@ int main()
 		}
 	}
 }
+
+template class Complex <float>;
+template class Complex<double>;
+template class Line <int>;
+template class Line<float>;
+template class Line<double>;
